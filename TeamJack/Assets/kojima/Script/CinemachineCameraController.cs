@@ -21,7 +21,8 @@ public class CinemachineCameraController : MonoBehaviour
 
     private void Awake()
     {
-        m_CinemachineThirdPersonFollow = GetComponent<CinemachineThirdPersonFollow>();
+        if (m_CinemachineThirdPersonFollow == null)
+            m_CinemachineThirdPersonFollow = GetComponent<CinemachineThirdPersonFollow>();
     }
 
     void Start()
@@ -31,7 +32,36 @@ public class CinemachineCameraController : MonoBehaviour
 
     void Update()
     {
-        
+    }
+
+    public void OnCinemachineThirdPersonFollowInitialized(float distance, float height)
+    {
+        if(m_CinemachineThirdPersonFollow == null)
+            m_CinemachineThirdPersonFollow = GetComponent<CinemachineThirdPersonFollow>();
+
+        // CinemachineThirdPersonèâä˙âª
+        m_CinemachineThirdPersonFollow.CameraDistance = distance;
+        m_CinemachineThirdPersonFollow.ShoulderOffset = new Vector3(0, height, 0);
+    }
+
+    public bool PlayOpeningCameraMiddle(float distance, float height, float lerpTime)
+    {
+        m_CinemachineThirdPersonFollow.CameraDistance = Mathf.Lerp(m_CinemachineThirdPersonFollow.CameraDistance, distance, lerpTime);
+        m_CinemachineThirdPersonFollow.ShoulderOffset = Vector3.Lerp(m_CinemachineThirdPersonFollow.ShoulderOffset, new Vector3(0, height, 0), lerpTime);
+
+        if ((distance - m_CinemachineThirdPersonFollow.CameraDistance) < 0.01f)
+            return true;
+        else return false;
+    }
+
+    public bool PlayOpeningCameraEnd(float distance, float height, float lerpTime)
+    {
+        m_CinemachineThirdPersonFollow.CameraDistance = Mathf.Lerp(m_CinemachineThirdPersonFollow.CameraDistance, distance, lerpTime);
+        m_CinemachineThirdPersonFollow.ShoulderOffset = Vector3.Lerp(m_CinemachineThirdPersonFollow.ShoulderOffset, new Vector3(0, height, 0), lerpTime);
+
+        if ((distance - m_CinemachineThirdPersonFollow.CameraDistance) < 0.01f)
+            return true;
+        else return false;
     }
 
     ///// <summary>

@@ -1,3 +1,5 @@
+using DG.Tweening;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -16,6 +18,14 @@ public class CameraTargetController : MonoBehaviour
     [Header("‰ñ“]‘¬“x"), SerializeField]
     private Vector2 m_RotateSpeed;
 
+    // Tweenˆ—‚ªI—¹‚µ‚½‚©
+    public bool IsTweenEnd { get; private set; }
+
+    private void Awake()
+    {
+        IsTweenEnd = false;
+    }
+
     void Start()
     {
 
@@ -23,11 +33,30 @@ public class CameraTargetController : MonoBehaviour
 
     void Update()
     {
-        RotateControll();
+        if (PlaySceneEventController.Instance.IsBeginCameraMotion)
+            RotateControll();
+    }
+
+    public void OnTargetTransformInitialized(Vector3 targetRotate)
+    {
+        transform.rotation = Quaternion.Euler(targetRotate);
+    }
+
+    public void OnOpeningSequence(Vector3 targetRotate, float duration, Ease ease, Action action)
+    {
+        // Dotween
+        transform.DORotateQuaternion(Quaternion.Euler(targetRotate), duration).SetEase(ease).OnStart(() =>
+        {
+            action();
+        }).OnComplete(() =>
+        {
+            // I—¹‚µ‚½‚çtrue‚ğ•Ô‚·
+            IsTweenEnd = true;
+        });
     }
 
     /// <summary>
-    /// ‚Ì‰ñ“]
+    /// Target‚Ì‰ñ“]
     /// </summary>
     private void RotateControll()
     {

@@ -41,12 +41,12 @@ public class Player : MonoBehaviour
     private float m_VerticalVelocity;
     // 重力
     private const float m_Gravity = 9.81f;
-    [Header("体重"), SerializeField]
-    private float m_Weight = 10.0f;
     // 地面張り付き速度
     private const float m_StickToGroundVelocity = -2.0f;
     [Header("ジャンプ力"), SerializeField]
     private float m_JumpSpeed;
+    [Header("落下時の速さ制限（Infinityで無制限）"), SerializeField]
+    private float m_FallSpeed;
 
     // 回転速度
     private float m_TurnVelocity;
@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
         // 値の初期化
         m_IdleMotionTransitionTimer = new float[m_IdleMotionTransitionTime.Length];
         m_IsJump = false;
-        m_IsGrounded = false;
+        m_IsGrounded = true;
 
         // アイドルモーションの初期化
         m_IsAnotherIdolMotion = false;
@@ -81,9 +81,6 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("m_IsJump : " + m_IsJump);
-        Debug.Log("m_IsGrounded : " + m_IsGrounded);
-
         OnJump();
         CheckGrounded();
         OnMove();
@@ -159,7 +156,7 @@ public class Player : MonoBehaviour
         // 空中にいるときは、下向きに重力加速度を与えて落下させる
         if (!m_IsGrounded)
         {
-            m_VerticalVelocity -= (m_Gravity * m_Weight) * Time.deltaTime;
+            m_VerticalVelocity -= m_Gravity * Time.deltaTime;
         }
         else
         {

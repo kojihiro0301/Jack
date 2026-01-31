@@ -22,6 +22,6 @@ public static class AnimatorParametersManager
     public static string IsJump => "IsJump";
     // •‚—V‚µ‚Ä‚¢‚é‚©
     public static string IsFloat => "IsFloat";
-    // •‚—V‚ðI—¹‚µ‚½‚©
-    public static string IsFloatEnd => "IsFloatEnd";
+    // Ž‚Á‚Ä‚¢‚é‚©
+    public static string IsHeld => "IsHeld";
 }

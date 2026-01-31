@@ -3,8 +3,12 @@ using UnityEngine;
 // プレイヤークラス
 public class Player : MonoBehaviour
 {
+    private static Player s_Instance;
+    public static Player Instance => s_Instance;
+
     // 他クラス
     private CameraTargetController m_CameraTargetController;
+    private PlayerAttackCollider m_PlayerAttackCollider;
 
     // コンポーネント
     private CharacterController m_CharacterController;
@@ -15,10 +19,11 @@ public class Player : MonoBehaviour
     /// </summary>
     enum PlayerState
     {
-        Idle,      // アイドル
-        Move,      // 移動
-        Floating,  // ジャンプ中
-        Attack     // 攻撃
+        Idle,     // アイドル
+        Move,     // 移動
+        Floating, // ジャンプ中
+        Attack,   // 攻撃
+        Hold      // 持つ
     }
     // 現在の状態
     private PlayerState m_CurrentPlayerState;
@@ -27,6 +32,9 @@ public class Player : MonoBehaviour
     private float[] m_IdleMotionTransitionTime;
     private float[] m_IdleMotionTransitionTimer;
     private bool m_IsAnotherIdolMotion;
+    [Header("各攻撃Animationの時間"), SerializeField]
+    private float[] m_AttackAnimationTime;
+    private float m_AttackAnimationTimer;
 
     // オブジェクトの速度
     private Vector3 m_Velocity;
@@ -36,6 +44,12 @@ public class Player : MonoBehaviour
     private float m_WalkSpeed;
     [SerializeField]
     private float m_DashSpeed;
+
+    // つかみ時の速度割合
+    private float m_HoldStateSpeedRatio = 0.6f;
+    // つかんでいるオブジェクト
+    private HoldableObject m_HoldableObject;
+    public HoldableObject HoldableObject => m_HoldableObject;
 
     // Y座標の速度
     private float m_VerticalVelocity;
@@ -51,13 +65,20 @@ public class Player : MonoBehaviour
     // 回転速度
     private float m_TurnVelocity;
 
+    // 移動しているか
+    private bool m_IsMove;
     // ジャンプ中か？
     private bool m_IsJump;
     // 地面に接地しているか
     private bool m_IsGrounded;
+    // つかみ準備状態か？
+    private bool m_IsHeldPreparation;
+    private bool m_IsHeld;
 
     private void Awake()
     {
+        s_Instance = this;
+
         // コンポーネント取得
         m_CharacterController = GetComponent<CharacterController>();
         m_Animator = GetComponent<Animator>();
@@ -66,6 +87,9 @@ public class Player : MonoBehaviour
         m_IdleMotionTransitionTimer = new float[m_IdleMotionTransitionTime.Length];
         m_IsJump = false;
         m_IsGrounded = true;
+        m_AttackAnimationTimer = 0;
+        m_HoldableObject = null;
+        m_IsHeld = false;
 
         // アイドルモーションの初期化
         m_IsAnotherIdolMotion = false;
@@ -77,16 +101,28 @@ public class Player : MonoBehaviour
     {
         // クラス取得
         m_CameraTargetController = GetComponentInChildren<CameraTargetController>();
+        m_PlayerAttackCollider = GetComponentInChildren<PlayerAttackCollider>();
+
+        CheckGrounded();
+        OnMove();
     }
 
     private void Update()
     {
-        OnJump();
         CheckGrounded();
-        OnMove();
+        AnimationControl();
+        if (!PlaySceneEventController.Instance.IsBeginCameraMotion) return;
+
+        if (m_CurrentPlayerState != PlayerState.Attack)
+        {
+            OnJump();
+            OnMove();
+        }
+
+        OnAttack();
+        OnHeldPreparation();
 
         StateControl();
-        AnimationControl();
     }
 
     /// <summary>
@@ -129,6 +165,9 @@ public class Player : MonoBehaviour
         // 移動速度を決める
         m_MoveSpeed = InputManagerList.Dash ? m_DashSpeed : m_WalkSpeed;
 
+        if (m_CurrentPlayerState == PlayerState.Hold)
+            m_MoveSpeed *= m_HoldStateSpeedRatio;
+
         // 速度を求める
         Vector3 velocity = forward * InputManagerList.VerticalValue * m_MoveSpeed +
                            right * InputManagerList.HorizontalValue * m_MoveSpeed;
@@ -142,8 +181,14 @@ public class Player : MonoBehaviour
 
         // スティックの入力がされている場合
         if (Vector3.Distance(velocity, Vector3.zero) > 0.01f)
+        {
+            m_IsMove = true;
             playerState = PlayerState.Move;
-        ChangeState(playerState);
+        }
+        else m_IsMove = false;
+
+        if (m_CurrentPlayerState != PlayerState.Hold)
+            ChangeState(playerState);
     }
 
     /// <summary>
@@ -163,7 +208,54 @@ public class Player : MonoBehaviour
             if (!m_IsJump)
                 // 速度を制限する
                 m_VerticalVelocity = m_StickToGroundVelocity;
+
+            m_IsJump = false;
         }
+    }
+
+    /// <summary>
+    /// 攻撃
+    /// </summary>
+    private void OnAttack()
+    {
+        if (InputManagerList.Attack
+            && !m_IsJump
+            && m_CurrentPlayerState != PlayerState.Attack
+            && m_CurrentPlayerState != PlayerState.Hold)
+        {
+            ChangeState(PlayerState.Attack);
+        }
+    }
+
+    private void OnHeldPreparation()
+    {
+        if (InputManagerList.Hold)
+        {
+            if (!m_IsJump
+            && m_CurrentPlayerState != PlayerState.Attack
+            && m_CurrentPlayerState != PlayerState.Hold)
+                m_IsHeldPreparation = true;
+        }
+        else m_IsHeldPreparation = false;
+
+
+        if (m_IsHeldPreparation
+            && !m_IsHeld
+            && m_PlayerAttackCollider.InObject() != null
+            && m_PlayerAttackCollider.IsHoldable
+            && m_HoldableObject == null)
+        {
+            m_IsHeld = true;
+            HoldableObject holdableObject = m_PlayerAttackCollider.InObject().GetComponent<HoldableObject>();
+            OnHeld(holdableObject);
+        }
+    }
+
+    public void OnHeld(HoldableObject heldObject)
+    {
+        m_HoldableObject = heldObject;
+        m_HoldableObject.OnGrabbed(transform);
+        ChangeState(PlayerState.Hold);
     }
 
     /// <summary>
@@ -171,7 +263,9 @@ public class Player : MonoBehaviour
     /// </summary>
     private void OnJump()
     {
-        if (InputManagerList.Jump && m_IsGrounded)
+        if (InputManagerList.Jump
+            && m_IsGrounded
+            && m_CurrentPlayerState != PlayerState.Hold)
         {
             m_VerticalVelocity = m_JumpSpeed;
             ChangeState(PlayerState.Floating);
@@ -183,7 +277,7 @@ public class Player : MonoBehaviour
     /// 変化時に一度だけ処理する
     /// </summary>
     /// <param name="nextState"></param>
-    private void ChangeState(PlayerState nextState)
+    private void ChangeState(PlayerState nextState, int num = 0)
     {
         if (m_CurrentPlayerState != nextState)
         {
@@ -199,6 +293,10 @@ public class Player : MonoBehaviour
                 case PlayerState.Floating:
                     m_IsGrounded = false;
                     m_IsJump = true;
+                    break;
+
+                case PlayerState.Attack:
+                    m_AttackAnimationTimer = m_AttackAnimationTime[num];
                     break;
             }
 
@@ -235,7 +333,6 @@ public class Player : MonoBehaviour
                     m_IsAnotherIdolMotion = false;
                     m_IdleMotionTransitionTimer[0] = m_IdleMotionTransitionTime[0];
                 }
-
                 break;
 
             case PlayerState.Move:
@@ -247,6 +344,26 @@ public class Player : MonoBehaviour
                 break;
 
             case PlayerState.Attack:
+                m_AttackAnimationTimer -= Time.deltaTime;
+
+                if (m_AttackAnimationTimer <= 0)
+                {
+                    ChangeState(PlayerState.Idle);
+                }
+                break;
+
+            case PlayerState.Hold:
+                if ((!m_IsHeldPreparation && m_IsHeld) || m_HoldableObject == null)
+                {
+                    if (m_HoldableObject != null)
+                    {
+                        m_IsHeld = false;
+                        m_HoldableObject.OnSeparated();
+                        m_HoldableObject = null;
+                    }
+
+                    ChangeState(PlayerState.Idle);
+                }
                 break;
         }
     }
@@ -258,9 +375,16 @@ public class Player : MonoBehaviour
     {
         m_Animator.SetBool(AnimatorParametersManager.IsIdle, m_CurrentPlayerState == PlayerState.Idle);
         m_Animator.SetBool(AnimatorParametersManager.IsAnotherIdolMotion, m_IsAnotherIdolMotion);
-        m_Animator.SetBool(AnimatorParametersManager.IsMove, m_CurrentPlayerState == PlayerState.Move);
+        m_Animator.SetBool(AnimatorParametersManager.IsMove, m_IsMove);
         m_Animator.SetBool(AnimatorParametersManager.IsDash, InputManagerList.Dash);
         m_Animator.SetBool(AnimatorParametersManager.IsJump, !m_IsGrounded);
+        m_Animator.SetBool(AnimatorParametersManager.IsAttack, m_CurrentPlayerState == PlayerState.Attack);
+        m_Animator.SetBool(AnimatorParametersManager.IsHeld, m_CurrentPlayerState == PlayerState.Hold || m_IsHeldPreparation);
+    }
+
+    private void OnDestroy()
+    {
+        s_Instance = null;
     }
 }
 

@@ -33,7 +33,7 @@ public class CameraTargetController : MonoBehaviour
 
     void Update()
     {
-        if (PlaySceneEventController.Instance.IsBeginCameraMotion)
+        if (!PlaySceneEventController.Instance.IsBeginCameraMotion) return;
             RotateControll();
     }
 
@@ -53,6 +53,9 @@ public class CameraTargetController : MonoBehaviour
             // èIóπÇµÇΩÇÁtrueÇï‘Ç∑
             IsTweenEnd = true;
         });
+
+        m_Rotate.x = transform.localEulerAngles.x;
+        m_Rotate.y = transform.localEulerAngles.y;
     }
 
     /// <summary>

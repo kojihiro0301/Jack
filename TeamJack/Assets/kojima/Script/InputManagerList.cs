@@ -13,6 +13,8 @@ public static class InputManagerList
 
     public static bool Dash => Input.GetButton("Dash"); // ダッシュ
     public static bool Jump => Input.GetButtonDown("Jump"); // ジャンプ
+    public static bool Attack => Input.GetButtonDown("Attack"); // 攻撃
+    public static bool Hold => Input.GetButton("Hold"); // 持つ
     public static bool Interact => Input.GetButtonDown("Interact"); // インタラクト
     public static bool Cancel   => Input.GetButtonDown("Cancel");   // キャンセル
     public static bool Pause  => Input.GetButtonDown("Pause");  // ポーズ

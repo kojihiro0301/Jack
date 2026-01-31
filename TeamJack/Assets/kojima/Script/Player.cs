@@ -1,0 +1,270 @@
+using UnityEngine;
+
+// プレイヤークラス
+public class Player : MonoBehaviour
+{
+    // 他クラス
+    private CameraTargetController m_CameraTargetController;
+
+    // コンポーネント
+    private CharacterController m_CharacterController;
+    private Animator m_Animator;
+
+    /// <summary>
+    /// プレイヤーの状態
+    /// </summary>
+    enum PlayerState
+    {
+        Idle,      // アイドル
+        Move,      // 移動
+        Floating,  // ジャンプ中
+        Attack     // 攻撃
+    }
+    // 現在の状態
+    private PlayerState m_CurrentPlayerState;
+
+    [Header("待機モーション変化時間"), SerializeField]
+    private float[] m_IdleMotionTransitionTime;
+    private float[] m_IdleMotionTransitionTimer;
+    private bool m_IsAnotherIdolMotion;
+
+    // オブジェクトの速度
+    private Vector3 m_Velocity;
+    [Header("移動速度")]
+    private float m_MoveSpeed;
+    [SerializeField]
+    private float m_WalkSpeed;
+    [SerializeField]
+    private float m_DashSpeed;
+
+    // Y座標の速度
+    private float m_VerticalVelocity;
+    // 重力
+    private const float m_Gravity = 9.81f;
+    [Header("体重"), SerializeField]
+    private float m_Weight = 10.0f;
+    // 地面張り付き速度
+    private const float m_StickToGroundVelocity = -2.0f;
+    [Header("ジャンプ力"), SerializeField]
+    private float m_JumpSpeed;
+
+    // 回転速度
+    private float m_TurnVelocity;
+
+    // ジャンプ中か？
+    private bool m_IsJump;
+    // 地面に接地しているか
+    private bool m_IsGrounded;
+
+    private void Awake()
+    {
+        // コンポーネント取得
+        m_CharacterController = GetComponent<CharacterController>();
+        m_Animator = GetComponent<Animator>();
+
+        // 値の初期化
+        m_IdleMotionTransitionTimer = new float[m_IdleMotionTransitionTime.Length];
+        m_IsJump = false;
+        m_IsGrounded = false;
+
+        // アイドルモーションの初期化
+        m_IsAnotherIdolMotion = false;
+        m_IdleMotionTransitionTimer[0] = m_IdleMotionTransitionTime[0];
+        m_IdleMotionTransitionTimer[1] = 0;
+    }
+
+    private void Start()
+    {
+        // クラス取得
+        m_CameraTargetController = GetComponentInChildren<CameraTargetController>();
+    }
+
+    private void Update()
+    {
+        Debug.Log("m_IsJump : " + m_IsJump);
+        Debug.Log("m_IsGrounded : " + m_IsGrounded);
+
+        OnJump();
+        CheckGrounded();
+        OnMove();
+
+        StateControl();
+        AnimationControl();
+    }
+
+    /// <summary>
+    /// Playerの回転制御
+    /// </summary>
+    private void OnRotation(Vector3 velocity)
+    {
+        // 回転
+        float targetAngleY = Mathf.Atan2(velocity.x, velocity.z)
+            * Mathf.Rad2Deg;
+        // イージングしながら次の回転角度[deg]を計算
+        float angleY = Mathf.SmoothDampAngle(
+            transform.eulerAngles.y,
+            targetAngleY,
+            ref m_TurnVelocity,
+            0.1f
+        );
+
+        // プレーヤーの向きを変える
+        if (velocity.magnitude > 0)
+        {
+            // オブジェクトの回転を更新
+            transform.rotation = Quaternion.Euler(0, angleY, 0);
+        }
+    }
+
+    /// <summary>
+    /// 移動
+    /// </summary>
+    private void OnMove()
+    {
+        // 視点の方向を取得
+        Vector3 forward = m_CameraTargetController.GetScreenForward();
+        Vector3 right = m_CameraTargetController.GetScreenRight();
+
+        m_MoveSpeed = 0;
+        m_Velocity = Vector3.zero;
+        PlayerState playerState = PlayerState.Idle;
+
+        // 移動速度を決める
+        m_MoveSpeed = InputManagerList.Dash ? m_DashSpeed : m_WalkSpeed;
+
+        // 速度を求める
+        Vector3 velocity = forward * InputManagerList.VerticalValue * m_MoveSpeed +
+                           right * InputManagerList.HorizontalValue * m_MoveSpeed;
+
+        // 回転
+        OnRotation(velocity);
+
+        // 最終的な速度
+        m_Velocity = new Vector3(velocity.x, m_VerticalVelocity, velocity.z) * Time.deltaTime;
+        m_CharacterController.Move(m_Velocity);
+
+        // スティックの入力がされている場合
+        if (Vector3.Distance(velocity, Vector3.zero) > 0.01f)
+            playerState = PlayerState.Move;
+        ChangeState(playerState);
+    }
+
+    /// <summary>
+    /// 地面に接地しているか判定する
+    /// </summary>
+    private void CheckGrounded()
+    {
+        m_IsGrounded = m_CharacterController.isGrounded;
+
+        // 空中にいるときは、下向きに重力加速度を与えて落下させる
+        if (!m_IsGrounded)
+        {
+            m_VerticalVelocity -= (m_Gravity * m_Weight) * Time.deltaTime;
+        }
+        else
+        {
+            if (!m_IsJump)
+                // 速度を制限する
+                m_VerticalVelocity = m_StickToGroundVelocity;
+        }
+    }
+
+    /// <summary>
+    /// ジャンプ
+    /// </summary>
+    private void OnJump()
+    {
+        if (InputManagerList.Jump && m_IsGrounded)
+        {
+            m_VerticalVelocity = m_JumpSpeed;
+            ChangeState(PlayerState.Floating);
+        }
+    }
+
+    /// <summary>
+    /// 状態の変化
+    /// 変化時に一度だけ処理する
+    /// </summary>
+    /// <param name="nextState"></param>
+    private void ChangeState(PlayerState nextState)
+    {
+        if (m_CurrentPlayerState != nextState)
+        {
+            switch (nextState)
+            {
+                case PlayerState.Idle:
+                    // デフォルトのアイドルモーション時間の初期化
+                    m_IsAnotherIdolMotion = false;
+                    m_IdleMotionTransitionTimer[0] = m_IdleMotionTransitionTime[0];
+                    m_IdleMotionTransitionTimer[1] = 0;
+                    break;
+
+                case PlayerState.Floating:
+                    m_IsGrounded = false;
+                    m_IsJump = true;
+                    break;
+            }
+
+            m_CurrentPlayerState = nextState;
+        }
+    }
+
+    /// <summary>
+    /// 状態ごとの制御
+    /// </summary>
+    private void StateControl()
+    {
+        switch (m_CurrentPlayerState)
+        {
+            case PlayerState.Idle:
+                if (m_IdleMotionTransitionTimer[0] >= 0)
+                    m_IdleMotionTransitionTimer[0] -= Time.deltaTime;
+
+                if (m_IdleMotionTransitionTimer[1] >= 0)
+                    m_IdleMotionTransitionTimer[1] -= Time.deltaTime;
+
+                // デフォルトのアニメーション時間が一定時間を過ぎた場合
+                if (m_IdleMotionTransitionTimer[0] <= 0 && !m_IsAnotherIdolMotion)
+                {
+                    // もう一つのアニメーションを再生するためのトリガーをオンにする
+                    m_IsAnotherIdolMotion = true;
+                    m_IdleMotionTransitionTimer[1] = m_IdleMotionTransitionTime[1];
+                }
+
+                // もう一つのアニメーション時間が一定時間を過ぎた場合
+                if (m_IdleMotionTransitionTimer[1] <= 0 && m_IsAnotherIdolMotion)
+                {
+                    // デフォルトのアニメーションを再生する
+                    m_IsAnotherIdolMotion = false;
+                    m_IdleMotionTransitionTimer[0] = m_IdleMotionTransitionTime[0];
+                }
+
+                break;
+
+            case PlayerState.Move:
+                break;
+
+            case PlayerState.Floating:
+                if (m_IsGrounded)
+                    ChangeState(PlayerState.Idle);
+                break;
+
+            case PlayerState.Attack:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Animation制御
+    /// </summary>
+    private void AnimationControl()
+    {
+        m_Animator.SetBool(AnimatorParametersManager.IsIdle, m_CurrentPlayerState == PlayerState.Idle);
+        m_Animator.SetBool(AnimatorParametersManager.IsAnotherIdolMotion, m_IsAnotherIdolMotion);
+        m_Animator.SetBool(AnimatorParametersManager.IsMove, m_CurrentPlayerState == PlayerState.Move);
+        m_Animator.SetBool(AnimatorParametersManager.IsDash, InputManagerList.Dash);
+        m_Animator.SetBool(AnimatorParametersManager.IsJump, !m_IsGrounded);
+    }
+}
+
+

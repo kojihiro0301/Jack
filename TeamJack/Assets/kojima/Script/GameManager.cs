@@ -15,9 +15,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public enum Progresses
     {
-        
+        GetJoyMask,   // Šì‰¼–Ê‚ğæ“¾
+        GetAngryMask, // “{‰¼–Ê‚ğæ“¾
+        GetSadMask,   // ˆ£‰¼–Ê‚ğæ“¾
+        GetFunMask    // Šy‰¼–Ê‚ğæ“¾
     }
-    public bool[] ProgressesBool;
+    public bool[] ProgressesBool { get; private set; }
 
     private void Awake()
     {
@@ -45,5 +48,13 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    /// <summary>
+    /// i’»’B¬
+    /// </summary>
+    public void ProgressAchievement(Progresses progresses)
+    {
+        ProgressesBool[(int)progresses] = true;
     }
 }

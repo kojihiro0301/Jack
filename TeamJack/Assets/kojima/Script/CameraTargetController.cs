@@ -33,8 +33,6 @@ public class CameraTargetController : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("m_Rotate : "+ m_Rotate);
-
         if (!PlaySceneEventController.Instance.IsBeginCameraMotion) return;
             RotateControll();
     }

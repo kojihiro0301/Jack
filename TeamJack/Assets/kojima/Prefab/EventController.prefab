@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlaySceneEventController
   m_CinemachineCameraController: {fileID: 0}
   m_CameraTargetController: {fileID: 0}
-  m_DelayTime: 1
+  m_DelayTime: 1.2
   m_StartTargetRotate: {x: 0, y: 180, z: 0}
   m_EndTargetRotate: {x: 20, y: 0, z: 0}
   m_CameraDistance:
@@ -57,6 +57,6 @@ MonoBehaviour:
   - -1
   - -1
   - -0.7
-  m_MidRecedesSpeed: 0.01
+  m_MidRecedesSpeed: 0.02
   m_EndRecedesSpeed: 0.05
   m_CameraMoveDuration: 3

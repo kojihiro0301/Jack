@@ -39,23 +39,26 @@ public class CameraTargetController : MonoBehaviour
 
     public void OnTargetTransformInitialized(Vector3 targetRotate)
     {
-        transform.rotation = Quaternion.Euler(targetRotate);
+        transform.localRotation = Quaternion.Euler(targetRotate);
     }
 
     public void OnOpeningSequence(Vector3 targetRotate, float duration, Ease ease, Action action)
     {
         // Dotween
-        transform.DORotateQuaternion(Quaternion.Euler(targetRotate), duration).SetEase(ease).OnStart(() =>
+        transform.DOLocalRotateQuaternion(Quaternion.Euler(targetRotate), duration).SetEase(ease).OnStart(() =>
         {
             action();
         }).OnComplete(() =>
         {
+            // オブジェクトの回転を更新
+            transform.rotation = Quaternion.Euler(targetRotate);
             // 終了したらtrueを返す
             IsTweenEnd = true;
         });
-
-        m_Rotate.x = transform.localEulerAngles.x;
-        m_Rotate.y = transform.localEulerAngles.y;
+        
+        m_Rotate.x = transform.eulerAngles.x;
+        m_Rotate.y = transform.eulerAngles.y;
+        
     }
 
     /// <summary>

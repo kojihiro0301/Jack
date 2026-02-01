@@ -3,28 +3,32 @@ using System.Collections;
 
 public class MaskDis : MonoBehaviour
 {
-    [Header("■ 1つ目のマスク設定")]
-    [Tooltip("これが最初のマスクならチェック（色を戻す）")]
+    [Header("GameManager連携")]
+    public GameManager.Progresses progressType;
+
+    [Tooltip("これが最初のマスクならチェック")]
     public bool isFirstMask = false;
 
-    [Header("■ 3つ目のマスク設定（ヒント出現）")]
-    [Tooltip("このマスクを取った時に出現させたいオブジェクト（数字など）")]
+    [Tooltip("このマスクを取った時に出現させたいオブジェクト")]
     public GameObject[] hiddenHints;
 
-    [Header("■ 共通設定")]
+    [Header("共通設定")]
     public CanvasGroup targetUI_CanvasGroup;
     public float uiFadeDuration = 1.0f;
-    public ColorController colorController; // 色戻し用
+    public ColorController colorController;
 
     public void FadeObj()
     {
-        // 1. 色を戻す（最初のマスクのみ）
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ProgressAchievement(progressType);
+        }
+ 
         if (isFirstMask && colorController != null)
         {
             colorController.StartRestoreColor();
         }
 
-        // 2. 隠された数字を表示する（3つ目のマスク用）
         if (hiddenHints != null && hiddenHints.Length > 0)
         {
             foreach (var obj in hiddenHints)
@@ -33,7 +37,6 @@ public class MaskDis : MonoBehaviour
             }
         }
 
-        // 3. UIフェードと自身の消滅
         StartCoroutine(ProcessDisappearAndUI());
     }
 

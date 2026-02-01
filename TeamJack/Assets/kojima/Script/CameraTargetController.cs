@@ -41,13 +41,13 @@ public class CameraTargetController : MonoBehaviour
 
     public void OnTargetTransformInitialized(Vector3 targetRotate)
     {
-        transform.rotation = Quaternion.Euler(targetRotate);
+        transform.localRotation = Quaternion.Euler(targetRotate);
     }
 
     public void OnOpeningSequence(Vector3 targetRotate, float duration, Ease ease, Action action)
     {
         // Dotween
-        transform.DORotateQuaternion(Quaternion.Euler(targetRotate), duration).SetEase(ease).OnStart(() =>
+        transform.DOLocalRotateQuaternion(Quaternion.Euler(targetRotate), duration).SetEase(ease).OnStart(() =>
         {
             action();
         }).OnComplete(() =>

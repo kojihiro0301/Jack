@@ -17,6 +17,11 @@ public class PlayerAttackCollider : MonoBehaviour
         return m_InObject;
     }
 
+    public void ClearInObject()
+    {
+        m_InObject = null;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (Player.Instance.HoldableObject == null)

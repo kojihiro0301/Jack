@@ -544,6 +544,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 193634108}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &255458111 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2937923083683738292, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+  m_PrefabInstance: {fileID: 614311387}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &262161779 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9194755856574656728, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+  m_PrefabInstance: {fileID: 614311387}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &338047560
 GameObject:
   m_ObjectHideFlags: 0
@@ -2128,6 +2138,10 @@ PrefabInstance:
     - {fileID: 6253202295039211576, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
     - {fileID: 6938321898658700502, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
     - {fileID: 5905571942457201829, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+    - {fileID: 7131564569157682400, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+    - {fileID: 1412340143462594487, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+    - {fileID: 3718767895231342001, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+    - {fileID: 9029823075585014822, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
     m_RemovedGameObjects:
     - {fileID: 2404015130589374374, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
     m_AddedGameObjects:
@@ -3888,6 +3902,11 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!1 &841461875 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 762571416025323443, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+  m_PrefabInstance: {fileID: 614311387}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &851295888
 GameObject:
   m_ObjectHideFlags: 0
@@ -4987,6 +5006,56 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1099556514}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1114182800
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1114182802}
+  - component: {fileID: 1114182801}
+  m_Layer: 0
+  m_Name: Manage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1114182801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114182800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77eac61a06d763a42877003c480d2bf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Clear
+  titleSceneName: TitleScene
+  targetObjects:
+  - {fileID: 841461875}
+  - {fileID: 262161779}
+  - {fileID: 255458111}
+  - {fileID: 1597686927}
+--- !u!4 &1114182802
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114182800}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.63009, y: -5.79913, z: -66.84332}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1163120127
 GameObject:
   m_ObjectHideFlags: 0
@@ -6315,6 +6384,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.55028915, y: 0.55028903, z: 0.55028903}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1597686927 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 58536989253445537, guid: 42fe3503e289ab54890a80ebbda084e2, type: 3}
+  m_PrefabInstance: {fileID: 614311387}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1760355545
 GameObject:
   m_ObjectHideFlags: 0
@@ -7637,3 +7711,4 @@ SceneRoots:
   - {fileID: 2050842007}
   - {fileID: 614311387}
   - {fileID: 185656709}
+  - {fileID: 1114182802}

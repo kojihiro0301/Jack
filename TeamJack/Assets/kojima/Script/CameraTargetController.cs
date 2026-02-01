@@ -33,6 +33,8 @@ public class CameraTargetController : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("m_Rotate : "+ m_Rotate);
+
         if (!PlaySceneEventController.Instance.IsBeginCameraMotion) return;
             RotateControll();
     }
@@ -50,12 +52,15 @@ public class CameraTargetController : MonoBehaviour
             action();
         }).OnComplete(() =>
         {
+            // オブジェクトの回転を更新
+            transform.rotation = Quaternion.Euler(targetRotate);
             // 終了したらtrueを返す
             IsTweenEnd = true;
         });
-
-        m_Rotate.x = transform.localEulerAngles.x;
-        m_Rotate.y = transform.localEulerAngles.y;
+        
+        m_Rotate.x = transform.eulerAngles.x;
+        m_Rotate.y = transform.eulerAngles.y;
+        
     }
 
     /// <summary>

@@ -165,7 +165,9 @@ public class Player : MonoBehaviour
         PlayerState playerState = PlayerState.Idle;
 
         // 移動速度を決める
-        m_MoveSpeed = InputManagerList.Dash ? m_DashSpeed : m_WalkSpeed;
+        if (GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.GetJoyMask])
+            m_MoveSpeed = InputManagerList.Dash ? m_DashSpeed : m_WalkSpeed;
+        else m_MoveSpeed = m_WalkSpeed;
 
         if (m_CurrentPlayerState == PlayerState.Hold)
             m_MoveSpeed *= m_HoldStateSpeedRatio;
@@ -221,6 +223,7 @@ public class Player : MonoBehaviour
     private void OnAttack()
     {
         if (InputManagerList.Attack
+            && GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.GetAngryMask]
             && !m_IsJump
             && m_CurrentPlayerState != PlayerState.Attack
             && m_CurrentPlayerState != PlayerState.Hold)
@@ -231,7 +234,7 @@ public class Player : MonoBehaviour
 
     private void OnHeldPreparation()
     {
-        if (InputManagerList.Hold)
+        if (InputManagerList.Hold && GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.GetAngryMask])
         {
             if (!m_IsJump
             && m_CurrentPlayerState != PlayerState.Attack
@@ -266,6 +269,7 @@ public class Player : MonoBehaviour
     private void OnJump()
     {
         if (InputManagerList.Jump
+            && GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.GetJoyMask]
             && m_IsGrounded
             && m_CurrentPlayerState != PlayerState.Hold)
         {
@@ -375,10 +379,10 @@ public class Player : MonoBehaviour
     /// </summary>
     private void AnimationControl()
     {
-        m_Animator.SetBool(AnimatorParametersManager.IsIdle, m_CurrentPlayerState == PlayerState.Idle);
+        m_Animator.SetBool(AnimatorParametersManager.IsIdle, !m_IsMove);
         m_Animator.SetBool(AnimatorParametersManager.IsAnotherIdolMotion, m_IsAnotherIdolMotion);
         m_Animator.SetBool(AnimatorParametersManager.IsMove, m_IsMove);
-        m_Animator.SetBool(AnimatorParametersManager.IsDash, InputManagerList.Dash);
+        m_Animator.SetBool(AnimatorParametersManager.IsDash, m_IsMove && m_MoveSpeed == m_DashSpeed);
         m_Animator.SetBool(AnimatorParametersManager.IsJump, !m_IsGrounded);
         m_Animator.SetBool(AnimatorParametersManager.IsAttack, m_CurrentPlayerState == PlayerState.Attack);
         m_Animator.SetBool(AnimatorParametersManager.IsHeld, m_CurrentPlayerState == PlayerState.Hold || m_IsHeldPreparation);
@@ -405,6 +409,8 @@ public class Player : MonoBehaviour
         {
             MaskDis maskDis = other.GetComponent<MaskDis>();
             maskDis.FadeObj();
+            // 進捗を更新
+            GameManager.Instance.ProgressAchievement(maskDis.progressType);
         }
     }
 

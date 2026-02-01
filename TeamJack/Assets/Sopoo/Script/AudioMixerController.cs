@@ -20,6 +20,7 @@ public class AudioMixerController : MonoBehaviour
                 float decibel = 20f * Mathf.Log10(value);
                 decibel = Mathf.Clamp(decibel, -80f, 0f);
                 audioMixer.SetFloat("BGM-Volume", decibel);
+                audioMixer.SetFloat("SE-Volume", decibel);
             });
         }
     }

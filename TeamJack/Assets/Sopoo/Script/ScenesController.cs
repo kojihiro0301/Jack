@@ -5,16 +5,17 @@ public class SceneController : MonoBehaviour
 {
     void Update()
     {
-        string currentScene = SceneManager.GetActiveScene().name;
+        string scene = SceneManager.GetActiveScene().name;
 
-        if (currentScene == "TitleScene")
+        if (scene == "TitleScene")
         {
+            // タイトルでは動画再生付き遷移を呼ぶだけ
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                SceneManager.LoadScene("PlayScene");
+                SceneChangeManager.Instance.PlayWithOpening();
             }
         }
-        else if (currentScene == "PlayScene")
+        else if (scene == "PlayScene")
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
@@ -25,7 +26,7 @@ public class SceneController : MonoBehaviour
                 SceneManager.LoadScene("TitleScene");
             }
         }
-        else if (currentScene == "ResultScene")
+        else if (scene == "ResultScene")
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {

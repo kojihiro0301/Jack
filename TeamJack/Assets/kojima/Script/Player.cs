@@ -75,6 +75,8 @@ public class Player : MonoBehaviour
     private bool m_IsHeldPreparation;
     private bool m_IsHeld;
 
+    private string m_MaskTag;
+
     private void Awake()
     {
         s_Instance = this;
@@ -380,6 +382,15 @@ public class Player : MonoBehaviour
         m_Animator.SetBool(AnimatorParametersManager.IsJump, !m_IsGrounded);
         m_Animator.SetBool(AnimatorParametersManager.IsAttack, m_CurrentPlayerState == PlayerState.Attack);
         m_Animator.SetBool(AnimatorParametersManager.IsHeld, m_CurrentPlayerState == PlayerState.Hold || m_IsHeldPreparation);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("m_MaskTag"))
+        {
+            MaskDis maskDis = other.GetComponent<MaskDis>();
+            other.gameObject.SetActive(false);
+        }
     }
 
     private void OnDestroy()

@@ -1,12 +1,8 @@
-using UnityEditor.UIElements;
 using UnityEngine;
 
 public class HoldableObject : MonoBehaviour
 {
     private Rigidbody m_Rigidbody;
-
-    [SerializeField]
-    private TagField m_HoldableTag;
 
     [Header("重さ"), SerializeField]
     private float m_Weight;
@@ -20,12 +16,10 @@ public class HoldableObject : MonoBehaviour
     private void Awake()
     {
         IsHeld = false;
-        // タグの変更
-        gameObject.tag = m_HoldableTag.name;
         m_Rigidbody = GetComponent<Rigidbody>();
         // Rigidbodyの追加
         if (m_Rigidbody == null)
-            gameObject.AddComponent<Rigidbody>();
+            m_Rigidbody = gameObject.AddComponent<Rigidbody>();
 
         m_Rigidbody.mass = m_Weight;
     }

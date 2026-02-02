@@ -18,7 +18,8 @@ public class GameManager : MonoBehaviour
         GetJoyMask,   // Šì‰¼–Ê‚ğæ“¾
         GetAngryMask, // “{‰¼–Ê‚ğæ“¾
         GetSadMask,   // ˆ£‰¼–Ê‚ğæ“¾
-        GetFunMask    // Šy‰¼–Ê‚ğæ“¾
+        GetFunMask,   // Šy‰¼–Ê‚ğæ“¾
+        End
     }
     public bool[] ProgressesBool { get; private set; }
 

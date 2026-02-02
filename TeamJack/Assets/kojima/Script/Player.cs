@@ -87,8 +87,8 @@ public class Player : MonoBehaviour
 
         // ’l‚Ì‰Šú‰»
         m_IdleMotionTransitionTimer = new float[m_IdleMotionTransitionTime.Length];
-        m_IsJump = false;
-        m_IsGrounded = false;
+        m_IsJump = true;
+        m_IsGrounded = true;
         m_AttackAnimationTimer = 0;
         m_HoldableObject = null;
         m_IsHeld = false;

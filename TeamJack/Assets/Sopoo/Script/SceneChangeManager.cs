@@ -11,7 +11,10 @@ public class SceneChangeManager : MonoBehaviour
     public GameObject videoScreenUI;
 
     [Header("Scene Settings")]
-    public string playSceneName = "PlayScene";
+    public string playSceneName = "PlayScene 1";
+
+    [SerializeField]
+    private GameObject ui;
 
     bool isPlaying = false;
 
@@ -45,6 +48,8 @@ public class SceneChangeManager : MonoBehaviour
         if (isPlaying) return;
 
         isPlaying = true;
+        if (ui != null)
+            ui.SetActive(false);
 
         if (videoScreenUI != null)
             videoScreenUI.SetActive(true);
@@ -58,6 +63,11 @@ public class SceneChangeManager : MonoBehaviour
         {
             SceneManager.LoadScene(playSceneName);
         }
+    }
+
+    public void PlayWithEnding()
+    {
+        
     }
 
     void OnVideoEnd(VideoPlayer vp)

@@ -10,14 +10,14 @@ public class SceneController : MonoBehaviour
         if (scene == "TitleScene")
         {
             // タイトルでは動画再生付き遷移を呼ぶだけ
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.anyKeyDown)
             {
                 SceneChangeManager.Instance.PlayWithOpening();
             }
         }
-        else if (scene == "PlayScene")
+        else if (scene == "PlayScene 1")
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.End])
             {
                 SceneManager.LoadScene("ResultScene");
             }
@@ -34,7 +34,7 @@ public class SceneController : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                SceneManager.LoadScene("PlayScene");
+                SceneManager.LoadScene("PlayScene 1");
             }
         }
     }

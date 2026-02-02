@@ -11,6 +11,7 @@ public class SimpleClearTrigger : MonoBehaviour
     [SerializeField] private List<GameObject> targetObjects = new List<GameObject>();
 
     private bool isTransitioning = false;
+    public bool IsTransitioning => isTransitioning;
 
     void Update()
     {
@@ -25,7 +26,7 @@ public class SimpleClearTrigger : MonoBehaviour
         {
             isTransitioning = true;
             Debug.Log("全アイテム回収完了！シーンを切り替えます。");
-            SceneManager.LoadScene(titleSceneName);
+            SceneChangeManager.Instance.PlayWithEnding();
         }
     }
 

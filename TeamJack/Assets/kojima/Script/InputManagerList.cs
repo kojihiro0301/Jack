@@ -10,6 +10,8 @@ public static class InputManagerList
     //public static float HorizontalRawValue    => Input.GetAxisRaw("Horizontal");    // 入力用（パッド）
     public static float CameraVerticalValue   => Input.GetAxis("CameraVertical");   // カメラ用（パッド）
     public static float CameraHorizontalValue => Input.GetAxis("CameraHorizontal"); // カメラ用（パッド）
+    public static float CameraVerticalValue_Mouse => Input.GetAxis("CameraVerticalMouse");   // カメラ用（パッド）
+    public static float CameraHorizontalValue_Mouse => Input.GetAxis("CameraHorizontalMouse"); // カメラ用（パッド）
 
     public static bool Dash => Input.GetButton("Dash"); // ダッシュ
     public static bool Jump => Input.GetButtonDown("Jump"); // ジャンプ

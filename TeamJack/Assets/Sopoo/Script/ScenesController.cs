@@ -15,27 +15,27 @@ public class SceneController : MonoBehaviour
                 SceneChangeManager.Instance.PlayWithOpening();
             }
         }
-        else if (scene == "PlayScene 1")
-        {
-            if (GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.End])
-            {
-                SceneManager.LoadScene("ResultScene");
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                SceneManager.LoadScene("TitleScene");
-            }
-        }
-        else if (scene == "ResultScene")
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                SceneManager.LoadScene("TitleScene");
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                SceneManager.LoadScene("PlayScene 1");
-            }
-        }
+        //else if (scene == "PlayScene 1")
+        //{
+        //    if (GameManager.Instance.ProgressesBool[(int)GameManager.Progresses.End])
+        //    {
+        //        //SceneChangeManager.Instance.PlayWithEnding();
+        //    }
+        //    else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //    {
+        //        SceneManager.LoadScene("TitleScene");
+        //    }
+        //}
+        //else if (scene == "ResultScene")
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Alpha1))
+        //    {
+        //        SceneManager.LoadScene("TitleScene");
+        //    }
+        //    else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //    {
+        //        SceneManager.LoadScene("PlayScene 1");
+        //    }
+        //}
     }
 }

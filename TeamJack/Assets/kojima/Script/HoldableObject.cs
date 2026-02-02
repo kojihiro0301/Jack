@@ -13,6 +13,9 @@ public class HoldableObject : MonoBehaviour
 
     private bool IsHeld;
 
+    [SerializeField]
+    private GameObject m_ArrowUI;
+
     private void Awake()
     {
         IsHeld = false;
@@ -22,6 +25,9 @@ public class HoldableObject : MonoBehaviour
             m_Rigidbody = gameObject.AddComponent<Rigidbody>();
 
         m_Rigidbody.mass = m_Weight;
+
+        if (m_ArrowUI != null)
+            m_ArrowUI.SetActive(true);
     }
 
     private void Update()
@@ -33,6 +39,8 @@ public class HoldableObject : MonoBehaviour
     public void OnGrabbed(Transform parent)
     {
         IsHeld = true;
+        if (m_ArrowUI != null)
+            m_ArrowUI.SetActive(false);
         transform.SetParent(parent);
         Vector3 heldPos = new Vector3(m_Offset.x, transform.localPosition.y, m_Offset.z);
         m_HeldPos = heldPos;
@@ -41,6 +49,8 @@ public class HoldableObject : MonoBehaviour
     public void OnSeparated()
     {
         IsHeld = false;
+        if (m_ArrowUI != null)
+            m_ArrowUI.SetActive(true);
         transform.parent = null;
     }
 }

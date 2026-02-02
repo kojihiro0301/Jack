@@ -77,6 +77,9 @@ public class Player : MonoBehaviour
 
     private string m_MaskTag = "Mask";
 
+    [SerializeField]
+    private SimpleClearTrigger m_SimpleClearTrigger;
+
     private void Awake()
     {
         s_Instance = this;
@@ -87,7 +90,7 @@ public class Player : MonoBehaviour
 
         // ílÇÃèâä˙âª
         m_IdleMotionTransitionTimer = new float[m_IdleMotionTransitionTime.Length];
-        m_IsJump = true;
+        m_IsJump = false;
         m_IsGrounded = true;
         m_AttackAnimationTimer = 0;
         m_HoldableObject = null;
@@ -113,7 +116,7 @@ public class Player : MonoBehaviour
     {
         CheckGrounded();
         AnimationControl();
-        if (!PlaySceneEventController.Instance.IsBeginCameraMotion) return;
+        if (!PlaySceneEventController.Instance.IsBeginCameraMotion || m_SimpleClearTrigger.IsTransitioning) return;
 
         if (m_CurrentPlayerState != PlayerState.Attack)
         {

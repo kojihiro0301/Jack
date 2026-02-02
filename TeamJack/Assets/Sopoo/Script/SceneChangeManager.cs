@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using UnityEngine.Video;
 
 public class SceneChangeManager : MonoBehaviour
@@ -8,21 +9,27 @@ public class SceneChangeManager : MonoBehaviour
 
     [Header("Opening Video")]
     public VideoPlayer openingVideoPlayer;
+    [Header("Ending Video")]
+    public VideoPlayer endingVideoPlayer;
+
     public GameObject videoScreenUI;
 
     [Header("Scene Settings")]
     public string playSceneName = "PlayScene 1";
+    public string titleSceneName = "TitleScene";
 
     [SerializeField]
     private GameObject ui;
 
     bool isPlaying = false;
+    bool isEnding = false;
 
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -39,7 +46,14 @@ public class SceneChangeManager : MonoBehaviour
         {
             openingVideoPlayer.playOnAwake = false;
             openingVideoPlayer.Stop();
-            openingVideoPlayer.loopPointReached += OnVideoEnd;
+            openingVideoPlayer.loopPointReached += OnOPVideoEnd;
+        }
+
+        if (endingVideoPlayer != null)
+        {
+            endingVideoPlayer.playOnAwake = false;
+            endingVideoPlayer.Stop();
+            endingVideoPlayer.loopPointReached += OnENDVideoEnd;
         }
     }
 
@@ -67,17 +81,46 @@ public class SceneChangeManager : MonoBehaviour
 
     public void PlayWithEnding()
     {
-        
+        if(isEnding) return;
+
+        isEnding = true;
+        if (videoScreenUI != null)
+            videoScreenUI.SetActive(true);
+
+        if (endingVideoPlayer != null)
+        {
+            endingVideoPlayer.time = 0;
+            endingVideoPlayer.Play();
+        }
+        else
+        {
+            GameManager.Instance.ResetProgress();
+            SceneManager.LoadScene(titleSceneName);
+        }
     }
 
-    void OnVideoEnd(VideoPlayer vp)
+    void OnOPVideoEnd(VideoPlayer vp)
     {
+        if (videoScreenUI != null)
+            videoScreenUI.SetActive(false);
         SceneManager.LoadScene(playSceneName);
+        isPlaying = false;
+    }
+
+    void OnENDVideoEnd(VideoPlayer vp)
+    {
+        if (videoScreenUI != null)
+            videoScreenUI.SetActive(false);
+        GameManager.Instance.ResetProgress();
+        SceneManager.LoadScene(titleSceneName);
+        isEnding = false;
     }
 
     void OnDestroy()
     {
         if (openingVideoPlayer != null)
-            openingVideoPlayer.loopPointReached -= OnVideoEnd;
+            openingVideoPlayer.loopPointReached -= OnOPVideoEnd;
+        if (endingVideoPlayer != null)
+            endingVideoPlayer.loopPointReached -= OnENDVideoEnd;
     }
 }

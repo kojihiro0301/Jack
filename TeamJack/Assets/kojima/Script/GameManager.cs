@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     }
     public bool[] ProgressesBool { get; private set; }
 
+    // コントローラー接続
+    public bool IsConnected {  get; private set; }
+
     private void Awake()
     {
         if (s_Instance == null)
@@ -38,17 +41,29 @@ public class GameManager : MonoBehaviour
         IsGameInitialized = true;
         ProgressesBool = new bool[Enum.GetValues(typeof(Progresses)).Length];
 
+        string[] controllers = Input.GetJoystickNames();
+
+        if (!IsConnected && controllers.Length > 0)
+        {
+            IsConnected = true;
+
+        }
+        else if (IsConnected && controllers.Length == 0)
+        {
+            IsConnected = false;
+        }
+
         DOTween.SetTweensCapacity(500, 100);
     }
 
     private void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
     /// <summary>
@@ -57,5 +72,10 @@ public class GameManager : MonoBehaviour
     public void ProgressAchievement(Progresses progresses)
     {
         ProgressesBool[(int)progresses] = true;
+    }
+
+    public void ResetProgress()
+    {
+        UtilityClass.BoolReset(ProgressesBool, false);
     }
 }

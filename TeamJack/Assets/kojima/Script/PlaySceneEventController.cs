@@ -47,10 +47,21 @@ public class PlaySceneEventController : MonoBehaviour
     [Header("カメラの移動する速度"), SerializeField]
     private float m_CameraMoveDuration;
 
+    [SerializeField]
+    private SimpleClearTrigger m_Trigger;
+    [Header("BGM"), SerializeField]
+    private AudioSource m_BGM;
+    [Header("SE"), SerializeField]
+    private GameObject m_Engawa;
+
+    private bool m_IsStop;
+
     private void Awake()
     {
         // インスタンスを変数に入れておく
         s_Instance = this;
+
+        m_IsStop = false;
     }
 
     void Start()
@@ -102,6 +113,14 @@ public class PlaySceneEventController : MonoBehaviour
                 if (m_IsCameraMotionChackPoint[(int)CameraMotionChackPoint.End])
                     IsBeginCameraMotion = true;
             }
+        }
+
+        if (m_IsStop) return;
+        if (m_Trigger.IsTransitioning)
+        {
+            m_BGM.Stop();
+            m_Engawa.SetActive(false);
+            m_IsStop = true;
         }
     }
 

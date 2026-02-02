@@ -5839,6 +5839,7 @@ MonoBehaviour:
   m_DashSpeed: 5
   m_Weight: 10
   m_JumpSpeed: 20
+  m_SimpleClearTrigger: {fileID: 0}
 --- !u!1 &6950233921737977575
 GameObject:
   m_ObjectHideFlags: 0
@@ -7169,7 +7170,7 @@ MonoBehaviour:
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
   ChannelMask: -1
-  UpdateMethod: 2
+  UpdateMethod: 1
   BlendUpdateMethod: 1
   LensModeOverride:
     Enabled: 0

@@ -67,20 +67,11 @@ public class CameraTargetController : MonoBehaviour
     private void RotateControll()
     {
         // カメラの回転(パッド)
-        if ((InputManagerList.CameraHorizontalValue > 0 || InputManagerList.CameraHorizontalValue < 0)
-            && (InputManagerList.CameraVerticalValue > 0 || InputManagerList.CameraVerticalValue < 0))
-        {
-            m_Rotate.y += InputManagerList.CameraHorizontalValue * m_RotateSpeed.y * Time.deltaTime;
-            m_Rotate.x -= InputManagerList.CameraVerticalValue * m_RotateSpeed.x * Time.deltaTime;
-        }
+        m_Rotate.y += InputManagerList.CameraHorizontalValue * m_RotateSpeed.y * Time.deltaTime;
+        m_Rotate.x -= InputManagerList.CameraVerticalValue * m_RotateSpeed.x * Time.deltaTime;
         // カメラの回転(Mouse)
-        else if ((InputManagerList.CameraHorizontalValue_Mouse > 0 || InputManagerList.CameraHorizontalValue_Mouse < 0)
-            && (InputManagerList.CameraVerticalValue_Mouse > 0 || InputManagerList.CameraVerticalValue_Mouse < 0))
-        {
-            
-            m_Rotate.y += InputManagerList.CameraHorizontalValue_Mouse * (m_RotateSpeed.y * 5) * Time.deltaTime;
-            m_Rotate.x -= InputManagerList.CameraVerticalValue_Mouse * (m_RotateSpeed.x * 5) * Time.deltaTime;
-        }
+        m_Rotate.y += InputManagerList.CameraHorizontalValue_Mouse * (m_RotateSpeed.y * 5) * Time.deltaTime;
+        m_Rotate.x -= InputManagerList.CameraVerticalValue_Mouse * (m_RotateSpeed.x * 5) * Time.deltaTime;
 
         // 制限を付ける
         m_Rotate.x = Mathf.Clamp(m_Rotate.x, m_RotateXMin, m_RotateXMax);
